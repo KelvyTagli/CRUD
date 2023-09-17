@@ -1,53 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CRUD
 {
     class Banco
     {
-        SqlConnection connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        SqlConnection connection = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\kelvy\\OneDrive\\Documentos\\Git_Projetos\\Visual Studio C#\\Estudos\\CRUD\\CRUD_Database.mdf\";Integrated Security=True;Connect Timeout=30");
         
         public int Insert(string nome, string Password)
         {
-            string INSERT = "INSERT INTO Tb_user (Nome, Password) VALUES (@NOME, @PASS)";
-
             try
             {
-                SqlCommand command = new SqlCommand(INSERT, connection);
+                connection.Open();
+                SqlCommand command = new SqlCommand("INSERT INTO Tb_user (NOME, PASS) VALUES (@NOME, @PASS)",connection);
                 command.Parameters.Add(new SqlParameter("@NOME", nome));
                 command.Parameters.Add(new SqlParameter("@PASS", Password));
-                connection.Open();
                 command.ExecuteNonQuery();
-                return 1;
+                Console.WriteLine("Cadastro efetuado com Sucesso");
+                Console.ReadKey();
             }
             catch (SqlException ex)
             {
                Console.WriteLine($"{ex}");
-                throw;
             }
             finally
             {
                 connection.Close();
             }
+            return 0;
         }
 
-        public void Select(string nome)
+        public string Validate_Username(string username)
         {
-            string SELECT = "SELECT * FROM Tb_user";
+            string name = "";
 
+            SqlCommand command = new SqlCommand("SELECT * FROM Tb_user",connection);
+            
             try
             {
-                SqlCommand command = new SqlCommand(SELECT, connection);
                 connection.Open();
-                SqlDataReader sqlData = command.ExecuteReader();
-
-                while (sqlData.Read())
+                SqlDataReader dr = command.ExecuteReader();
+                if (dr.HasRows)
                 {
-                    Console.WriteLine($"{sqlData}");
+                    while (dr.Read())
+                    {
+                        name = dr.ToString();
+                        Console.WriteLine($"{name}");
+                        if (name == username)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Erro");
                 }
             }
             catch (SqlException ex)
@@ -59,28 +72,123 @@ namespace CRUD
             {
                 connection.Close();
             }
+
+            return name;
+        }
+
+        public string Validate_Password(string password)
+        {
+            string _pass = "";
+
+            SqlCommand command = new SqlCommand("SELECT * FROM Tb_user", connection);
+            
+            try
+            {
+                connection.Open();
+                SqlDataReader dr = command.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        _pass = dr.ToString();
+                        Console.WriteLine($"{_pass}");
+                        if (_pass == password)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Erro");
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"{ex}");
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return _pass;
         }
     }
 
     class Login:Banco
     {
+        Banco Bd = new Banco();
+
         private string Nome;
         private string Password;
-        private string conf_Pass;
 
         public void NewLogin()
         {
-            Banco Bd = new Banco();
             new Program();
+            string _Name;
+            string _Password;
+            string conf;
 
-            Console.WriteLine("| ==>   NEW LOGIN   <==|");
+            Console.WriteLine("| ==>   NEW LOGIN   <==  |");
             Console.Write("| ==> Name de Usuario: ");
-            Nome = Console.ReadLine();
-            while (string.IsNullOrWhiteSpace(Nome))
+            _Name = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(_Name))
             {
                 Console.Clear();
                 Console.WriteLine("| Operação Invalida, Digite Novamente |");
                 Console.Write("| ==> Name de Usuario: ");
+                _Name = Console.ReadLine();
+            }
+
+            Console.Write("| ==> Password: ");
+            _Password = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(_Password))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> Password: ");
+                _Password = Console.ReadLine();
+            }
+
+            Console.Write("| ==> Confirm Password: ");
+            conf = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(conf))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> Confirm Password: ");
+                conf = Console.ReadLine();
+            }
+
+            if (_Password == conf)
+            {
+                if (Bd.Insert(_Name, _Password) == 0)
+                {
+                    Console.WriteLine($"name{_Name}");
+                    Console.WriteLine($"Pass{_Password}");
+                    Console.ReadKey();
+                    Console.Clear();
+                    Program.Main();
+                } else
+                {
+                    Console.WriteLine("Erro No cadastro !!");
+                    return;
+                }
+            }
+        }
+
+        public void SingIn()
+        {
+            Console.WriteLine("|  ==>  LOGIN  <== |");
+            Console.Write("| ==> UserName: ");
+            Nome = Console.ReadLine();
+            while(string.IsNullOrWhiteSpace(Nome))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> UserName: ");
                 Nome = Console.ReadLine();
             }
 
@@ -90,33 +198,18 @@ namespace CRUD
             {
                 Console.Clear();
                 Console.WriteLine("| Operação Invalida, Digite Novamente |");
-                Console.Write("| ==> Password: ");
+                Console.Write("| ==> UserName: ");
                 Password = Console.ReadLine();
             }
-
-            Console.Write("| ==> Confirm Password: ");
-            conf_Pass = Console.ReadLine();
-            while (string.IsNullOrWhiteSpace(conf_Pass))
+            
+            if (Nome.Equals(Bd.Validate_Username(Nome)) && Password.Equals(Bd.Validate_Password(Password)))
             {
                 Console.Clear();
-                Console.WriteLine("| Operação Invalida, Digite Novamente |");
-                Console.Write("| ==> Confirm Password: ");
-                conf_Pass = Console.ReadLine();
-            }
-
-            if (Password == conf_Pass)
+                Console.WriteLine($"Login Efetuado");
+                Console.ReadKey();
+            } else
             {
-                if (Bd.Insert(Nome, Password) == 1)
-                {
-                    Console.WriteLine("Cadastro Efetuado com sucesso");
-                    Console.ReadKey();
-                    Console.Clear();
-                    Program.Main();
-                } else
-                {
-                    Console.WriteLine("Erro No cadastro !!");
-                    return;
-                }
+                Console.WriteLine("username ou senha Incorretos"); 
             }
         }
     }
@@ -128,7 +221,7 @@ namespace CRUD
             Login login = new Login();
 
             Console.WriteLine("| ==> Bem Vindo <== |");
-            Console.WriteLine("| ==>   LOGIN   <==|");
+            Console.WriteLine("| ==>   LOGIN   <== |");
             Console.WriteLine("| [1] ==> Login");
             Console.WriteLine("| [2] ==> New Login");
             Console.WriteLine("| [3] ==> Sair");
@@ -138,12 +231,16 @@ namespace CRUD
             {
                 case 1:
                     {
-                        
+                        login.SingIn();
                         break;
                     }
                 case 2:
                     {
                         login.NewLogin();
+                        break;
+                    }
+                default:
+                    {
                         break;
                     }
             }

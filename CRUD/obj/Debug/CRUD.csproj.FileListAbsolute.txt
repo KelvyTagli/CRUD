@@ -1,0 +1,7 @@
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\bin\Debug\CRUD.exe.config
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\bin\Debug\CRUD.exe
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\bin\Debug\CRUD.pdb
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\obj\Debug\CRUD.csproj.AssemblyReference.cache
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\obj\Debug\CRUD.csproj.CoreCompileInputs.cache
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\obj\Debug\CRUD.exe
+C:\Users\kelvy\OneDrive\Documentos\Git_Projetos\Visual Studio C#\Estudos\CRUD\CRUD\obj\Debug\CRUD.pdb

@@ -36,6 +36,28 @@ namespace CRUD
             return 0;
         }
 
+        public int Delete(string nome)
+        {
+            try
+            {
+                connection.Open();
+                SqlCommand commandDelete = new SqlCommand("DELETE FROM Tb_user WHERE NOME = @NOME",connection);
+                commandDelete.Parameters.Add(new SqlParameter("@NOME", nome));
+                commandDelete.ExecuteNonQuery();
+                Console.WriteLine("Usuario Excluido com Sucesso");
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Erro {0}",ex);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return 1;
+        }
+
         public string Validate_Username(string username)
         {
             string name = "";
@@ -188,6 +210,43 @@ namespace CRUD
                 Console.WriteLine("Erro No Login");
             }
         }
+
+        public void DeleteLogin()
+        {
+            Console.WriteLine("|  ==>  DELETE LOGIN  <== |");
+            Console.Write("| ==> UserName: ");
+            Nome = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(Nome))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> UserName: ");
+                Nome = Console.ReadLine();
+            }
+            if (Bd.Validate_Username(Nome).Equals(Nome) == true)
+            {
+                Console.WriteLine("| Login Encotrado com Sucesso");
+                Console.WriteLine("| Login ==> {0}",Nome);
+                Console.WriteLine("| Deseja Excluir Esse Login");
+                Console.WriteLine("| [1] ==> SIM");
+                Console.WriteLine("| [2] ==> NÃO");
+                Console.Write("|>> ");
+                int boolean = Int32.Parse(Console.ReadLine());
+                switch(boolean)
+                {
+                    case 1:
+                        {
+                            Delete(Nome);
+                            break;
+                        }
+                    default:
+                        {
+                            Program.Main();
+                            break;
+                        }
+                }
+            }
+        }
     }
 
     class Program
@@ -200,7 +259,9 @@ namespace CRUD
             Console.WriteLine("| ==>   LOGIN   <== |");
             Console.WriteLine("| [1] ==> Login");
             Console.WriteLine("| [2] ==> New Login");
-            Console.WriteLine("| [3] ==> Sair");
+            Console.WriteLine("| [3] ==> Delete Login");
+            Console.WriteLine("| [4] ==> Edit Login");
+            Console.WriteLine("| [0] ==> Sair");
             Console.Write("|>> ");
             int option = Int32.Parse(Console.ReadLine());
             switch (option)
@@ -213,6 +274,11 @@ namespace CRUD
                 case 2:
                     {
                         login.NewLogin();
+                        break;
+                    }
+                case 3:
+                    {
+                        login.DeleteLogin();
                         break;
                     }
                 default:

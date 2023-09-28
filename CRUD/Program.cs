@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace CRUD
@@ -34,6 +35,29 @@ namespace CRUD
                 connection.Close();
             }
             return 0;
+        }
+
+        public int Update(string username, string nome,string password)
+        {
+            try
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand("UPDATE Tb_user SET NOME = @NOME, PASS = @PASS WHERE NOME = @USERNAME",connection);
+                command.Parameters.Add(new SqlParameter("@USERNAME", username));
+                command.Parameters.Add(new SqlParameter ("@NOME", nome));
+                command.Parameters.Add(new SqlParameter("@PASS", password));
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Erro {0}",ex);
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return 1;
         }
 
         public int Delete(string nome)
@@ -247,6 +271,41 @@ namespace CRUD
                 }
             }
         }
+
+        public void EditLogin()
+        {
+            Console.WriteLine("|  ==>  EDIT LOGIN  <== |");
+            Console.Write("| ==> UserName: ");
+            Nome = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(Nome))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> UserName: ");
+                Nome = Console.ReadLine();
+            }
+            Console.WriteLine("| ==> Novo Nome de Usuario: ");
+            Console.Write("|>>");
+            string newNome = Console.ReadLine();
+            while(string.IsNullOrWhiteSpace(newNome))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> new Name: ");
+                newNome = Console.ReadLine();
+            }
+            Console.WriteLine("| ==> Novo Nome de Usuario: ");
+            Console.Write("|>>");
+            string newPassword = Console.ReadLine();
+            while (string.IsNullOrWhiteSpace(newPassword))
+            {
+                Console.Clear();
+                Console.WriteLine("| Operação Invalida, Digite Novamente |");
+                Console.Write("| ==> new Name: ");
+                newPassword = Console.ReadLine();
+            }
+            Update(Nome, newNome, newPassword);
+        }
     }
 
     class Program
@@ -279,6 +338,11 @@ namespace CRUD
                 case 3:
                     {
                         login.DeleteLogin();
+                        break;
+                    }
+                case 4:
+                    {
+                        login.EditLogin();
                         break;
                     }
                 default:
